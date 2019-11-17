@@ -1,8 +1,19 @@
 let express = require('express');
 let http = require('http');
 let webapp = express();
-let port = 3000;
 let bodyParser = require('body-parser');
+
+let consoleReader = require('readline').createInterface({
+   input: process.stdin,
+   output: process.stdout
+});
+
+consoleReader.question(`Server start at port? `, port =>{
+    webapp.listen(port, function(){
+        console.log(`Server is listening on port ${port}`);
+    });
+})
+
 
 webapp.use(bodyParser.json());
 webapp.use(bodyParser.urlencoded({extended: true}));
@@ -28,7 +39,4 @@ webapp.post('/new-user', (request, response) => {
    response.render('user-confirm', message);
 });
 
-webapp.listen(port, function(){
-    console.log('Server is listening on port 3000');
-});
 
