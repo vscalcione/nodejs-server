@@ -2,15 +2,16 @@ let express = require('express');
 let http = require('http');
 let webapp = express();
 let bodyParser = require('body-parser');
+let host = "127.0.0.1";
 
 let consoleReader = require('readline').createInterface({
    input: process.stdin,
    output: process.stdout
 });
 
-consoleReader.question(`Server start at port? `, port =>{
+consoleReader.question(`Server start at port? `, port => {
     webapp.listen(port, function(){
-        console.log(`Server is listening on port ${port}`);
+        console.log(`Server is listening at host ${host} on port ${port}`);
     });
 })
 
@@ -28,13 +29,19 @@ webapp.get('/greetings/:name', function(request, response){
 webapp.post('/new-user', (request, response) => {
    console.log('This is the body', request.body);
    let name = request.body.firstName;
-   let lastName = request.body.secondName;
+   let surname = request.body.secondName;
+   let email = request.body.email;
+   let password = request.body.password;
+
 
    let message = {
        title: 'The user has been created',
        text: 'User created',
        firstName: name,
-       secondName: lastName
+       secondName: surname,
+       email: email,
+       password: password
+
    }
    response.render('user-confirm', message);
 });
