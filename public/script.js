@@ -18,7 +18,7 @@ var calcolaCodiceFiscale = function(){
 }
 
 $(document).on('change', 'form :input', function(){
-    calcoloCF();
+    calculateCF();
 });
 
 var calculateCF = function(name, surname, sex, birthDate, nazione, comune, provincia){
@@ -30,11 +30,14 @@ var calculateCF = function(name, surname, sex, birthDate, nazione, comune, provi
     var year = array[2]
     var cf;
     if(nazioneCampo === 'Italia')
-        cf = CodiceFiscale.calcola_codice(name, surname, sex, day, month, year, comuneCampo);
+        cf = FiscalCode.calculateFiscalCode(name, surname, sex, day, month, year, comuneCampo);
     else{
         var nazioneCampoStringa = nazioneCampo.toString();
         nazioneCampoStringa = nazioneCampoStringa+ " (EE)";
-        cf = CodiceFiscale.calcola_codice(name, surname, sex, day, month, year, nazioneCampoStringa);
+        cf = FiscalCode.calculateFiscalCode(name, surname, sex, day, month, year, nazioneCampoStringa);
     }
     return cf;
 }
+
+
+

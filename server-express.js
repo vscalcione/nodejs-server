@@ -13,8 +13,7 @@ consoleReader.question(`Server start at port? `, port => {
     webapp.listen(port, function(){
         console.log(`Server is listening at host ${host} on port ${port}`);
     });
-})
-
+});
 
 webapp.use(bodyParser.json());
 webapp.use(bodyParser.urlencoded({extended: true}));
@@ -25,6 +24,7 @@ webapp.get('/greetings/:name', function(request, response){
     let username = request.params.name;
     response.render('index', {title: 'This is a NodeJS begin course', message: `Hello ${username}, Im your first application`});
 });
+
 
 webapp.post('/new-user', (request, response) => {
    console.log('This is the body', request.body);

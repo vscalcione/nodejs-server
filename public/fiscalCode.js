@@ -1,53 +1,39 @@
-//function formsubmit(form)
-//{
-//  var sesso=form.sesso[0].checked?'M':'F'
-//  var data=form.data.value
-//  data=data.match(/^\s*(\d+).(\d+).(\d+)/)
-//  var codice=CFisc.calcola_codice(
-//    form.nome.value,
-//    form.cognome.value,
-//    sesso,
-//    data[1],data[2],data[3],
-//    form.luogo.value
-//    )
-//  form.codice.value=codice
-//};
-var CodiceFiscale={};
+var FiscalCode={};
 
-CodiceFiscale.tavola_mesi=['A','B','C','D','E','H','L','M','P','R','S','T'];
+FiscalCode.monthsTable=['A','B','C','D','E','H','L','M','P','R','S','T'];
 
-CodiceFiscale.tavola_omocodie=['L','M','N','P','Q','R','S','T','U','V'];
+FiscalCode.tavolaOmocodie=['L','M','N','P','Q','R','S','T','U','V'];
 
-CodiceFiscale.tavola_carattere_di_controllo_valore_caratteri_dispari={
+FiscalCode.tavolaCarattereDiControlloValoreCaratteriDispari = {
     0:1,  1:0,  2:5,  3:7,  4:9,  5:13, 6:15, 7:17, 8:19,
     9:21, A:1,  B:0,  C:5,  D:7,  E:9,  F:13, G:15, H:17,
     I:19, J:21, K:2,  L:4,  M:18, N:20, O:11, P:3,  Q:6,
     R:8,  S:12, T:14, U:16, V:10, W:22, X:25, Y:24, Z:23
 };
 
-CodiceFiscale.tavola_carattere_di_controllo_valore_caratteri_pari={
+FiscalCode.tavolaCaratteriDiControlloValoreCaratteriPari = {
     0:0,  1:1,   2:2,  3:3,   4:4,  5:5,  6:6,  7:7,  8:8,
     9:9,  A:0,   B:1,  C:2,   D:3,  E:4,  F:5,  G:6,  H:7,
     I:8,  J:9,   K:10, L:11,  M:12, N:13, O:14, P:15, Q:16,
     R:17, S:18,  T:19, U:20,  V:21, W:22, X:23, Y:24, Z:25
 };
 
-CodiceFiscale.tavola_carattere_di_controllo="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+FiscalCode.tavolaCarattereDiControllo = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-CodiceFiscale.calcola_carattere_di_controllo=function(codice_fiscale){
-    var i,val=0;
-    for(i=0;i<15;i++){
-        var c=codice_fiscale[i];
-        if(i%2)
-            val+=this.tavola_carattere_di_controllo_valore_caratteri_pari[c];
+FiscalCode.calculateControlChar = function(fiscalCode){
+    var i , value = 0;
+    for(i = 0; i < 15; i++){
+        var code = fiscalCode[i];
+        if(i % 2)
+            value += this.tavolaCaratteriDiControlloValoreCaratteriPari[code];
         else
-            val+=this.tavola_carattere_di_controllo_valore_caratteri_dispari[c]
+            value += this.tavolaCarattereDiControlloValoreCaratteriDispari[code]
     }
-    val=val%26;
-    return this.tavola_carattere_di_controllo.charAt(val)
+    value = value%26;
+    return this.tavolaCarattereDiControllo.charAt(value)
 };
 
-CodiceFiscale.affronta_omocodia=function(codice_fiscale, numero_omocodia)
+FiscalCode.affronta_omocodia = function(fiscalCode, numero_omocodia)
 {
     // non funziona
     var cifre_disponibili=[14,13,12,10,9,7,6];
@@ -59,50 +45,43 @@ CodiceFiscale.affronta_omocodia=function(codice_fiscale, numero_omocodia)
     }
 };
 
-CodiceFiscale.ottieni_consonanti=function(str)
-{
+FiscalCode.ottieni_consonanti = function(str) {
     return str.replace(/[^BCDFGHJKLMNPQRSTVWXYZ]/gi,'')
 };
 
-CodiceFiscale.ottieni_vocali=function(str)
-{
+FiscalCode.ottieni_vocali=function(str) {
     return str.replace(/[^AEIOU]/gi,'')
 };
 
-CodiceFiscale.calcola_codice_cognome=function(cognome)
-{
-    var codice_cognome=this.ottieni_consonanti(cognome);
-    codice_cognome+=this.ottieni_vocali(cognome);
-    codice_cognome+='XXX';
-    codice_cognome=codice_cognome.substr(0,3);
-    return codice_cognome.toUpperCase()
+FiscalCode.calcola_codice_cognome = function(surname) {
+    var surnameCode = this.ottieni_consonanti(surname);
+    surnameCode += this.ottieni_vocali(surname);
+    surnameCode += 'XXX';
+    surnameCode = surnameCode.substr(0,3);
+    return surnameCode.toUpperCase()
 };
 
-CodiceFiscale.calcola_codice_nome=function(nome)
-{
-    var codice_nome=this.ottieni_consonanti(nome);
-    if(codice_nome.length>=4){
-        codice_nome=
-            codice_nome.charAt(0)+
-            codice_nome.charAt(2)+
-            codice_nome.charAt(3)
-    }else{
-        codice_nome+=this.ottieni_vocali(nome);
-        codice_nome+='XXX';
-        codice_nome=codice_nome.substr(0,3)
+FiscalCode.calculateNameCode = function(name) {
+    var nameCode = this.ottieni_consonanti(name);
+    if(nameCode.length >= 4){
+        nameCode = nameCode.charAt(0)+ nameCode.charAt(2)+ nameCode.charAt(3)
     }
-    return codice_nome.toUpperCase()
+    else{
+        nameCode += this.ottieni_vocali(name);
+        nameCode += 'XXX';
+        nameCode = nameCode.substr(0,3)
+    }
+    return nameCode.toUpperCase()
 };
 
-CodiceFiscale.calcola_codice_data=function(gg, mm, aa, sesso)
-{
+FiscalCode.calcola_codice_data=function(day, month, aa, sesso) {
     var d=new Date();
     d.setYear(aa);
-    d.setMonth(mm-1);
-    d.setDate(gg);
+    d.setMonth(month-1);
+    d.setDate(day);
     var anno="0"+d.getFullYear();
     anno=anno.substr(anno.length-2,2);
-    var mese=this.tavola_mesi[d.getMonth()];
+    var mese=this.monthsTable[d.getMonth()];
     var giorno=d.getDate();
     if(sesso =='F') giorno+=40;
     giorno="0"+giorno;
@@ -110,16 +89,16 @@ CodiceFiscale.calcola_codice_data=function(gg, mm, aa, sesso)
     return ""+anno+mese+giorno
 };
 
-CodiceFiscale.trova_comune=function(pattern_comune)
+FiscalCode.findComune = function(patternComune)
 {
-    var stringaComune = ""+pattern_comune;
+    var stringaComune = ""+patternComune;
     var stringa = stringaComune.toUpperCase();
     var codice,comune,ret=[];
 //  var quoted=pattern_comune.replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, "\\$1");
 //  var re=new RegExp(quoted,'i');
 //  var str = re.toString();
-    for(codice in this.codici_catastali) {
-        comune=this.codici_catastali[codice]
+    for(codice in this.catastalCodes) {
+        comune=this.catastalCodes[codice]
         if(comune == stringa) {
             ret.push([comune,codice])
         }
@@ -127,24 +106,23 @@ CodiceFiscale.trova_comune=function(pattern_comune)
     return ret
 };
 
-CodiceFiscale.calcola_codice_comune=function(pattern_comune){
-    if(pattern_comune.match(/^[A-Z]\d\d\d$/i)) return pattern_comune;
-    return this.trova_comune(pattern_comune)[0][1];
+FiscalCode.calculateComuneCod = function(pattern_comune){
+    if(pattern_comune.match(/^[A-Z]\d\d\d$/i))
+        return pattern_comune;
+    return this.findComune(pattern_comune)[0][1];
 };
 
-CodiceFiscale.calcola_codice=function(nome, cognome, sesso, giorno, mese, anno, luogo){
-    var codice=
-        this.calcola_codice_cognome(cognome)+
-        this.calcola_codice_nome(nome)+
-        this.calcola_codice_data(giorno,mese,anno,sesso)+
-        this.calcola_codice_comune(luogo);
+FiscalCode.calculateFiscalCode =function(name, surname, sex, bornDay, bornMonth, bornYear, bornPlace){
+    var fiscalCode =
+        this.calcola_codice_cognome(surname) +
+        this.calculateNameCode(name) + this.calcola_codice_data(bornDay, bornMonth, bornYear, sex) +
+        this.calculateComuneCod(bornPlace);
 
-    codice+=this.calcola_carattere_di_controllo(codice);
-
-    return codice
+    fiscalCode += this.calculateControlChar(fiscalCode);
+    return fiscalCode
 };
 
-CodiceFiscale.codici_catastali={
+FiscalCode.catastalCodes = {
     "E207":"GROTTAMMARE (AP)",
     "E868":"MALTIGNANO (AP)",
     "F044":"MASSIGNANO (AP)",
