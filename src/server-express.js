@@ -3,6 +3,7 @@ const http = require('http');
 const bodyParser = require('body-parser');
 
 const webapp = express();
+const port = process.env.port || 3000;
 const consoleReader = require('readline').createInterface({
     input: process.stdin,
     output: process.stdout
@@ -16,6 +17,7 @@ consoleReader.question(`Server start at port ${port}`, () => {
 
 webapp.use(bodyParser.json());
 webapp.use(bodyParser.urlencoded({extended: true}));
+webapp.set('views', __dirname + '/views');
 webapp.set('view engine', 'jade');
 
 webapp.get('/greetings/:name', (request, response) => {
